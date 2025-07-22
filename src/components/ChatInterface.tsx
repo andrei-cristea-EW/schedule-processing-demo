@@ -71,6 +71,17 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="chat-interface">
+      <div className="header">
+        <div className="header-content">
+          <div className="header-logo">
+            <span>SF</span>
+          </div>
+          <div>
+            <h1 className="header-title">SA Fire Protection AI</h1>
+            <p className="header-subtitle">Powered by EverWorker Agents</p>
+          </div>
+        </div>
+      </div>
       <div className="chat-messages">
         {messages.length === 0 && (
           <div className="welcome-message">
@@ -82,8 +93,8 @@ const ChatInterface: React.FC = () => {
                 Welcome to SA Fire Protection AI
               </h3>
               <p className="welcome-description">
-                Ask me anything about our fire protection products, monitors, and systems.
-                I'm here to help with technical specifications, applications, and more.
+                Your intelligent EverWorker Agent is ready to assist with fire protection products, monitors, and systems.
+                Get expert guidance on technical specifications, applications, and solutions.
               </p>
             </div>
           </div>

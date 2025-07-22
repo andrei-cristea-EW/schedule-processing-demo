@@ -28,25 +28,25 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, disabled = f
       <form onSubmit={handleSubmit} className="message-input-form">
         <div className="message-input-wrapper">
           <textarea
+            id="message-input"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask about SA Fire Protection products..."
+            placeholder="Ask your EverWorker Agent about fire protection solutions..."
             disabled={disabled}
             rows={1}
             className="message-input"
           />
+          <button
+            type="submit"
+            disabled={!message.trim() || disabled}
+            className="send-button"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
         </div>
-        <button
-          type="submit"
-          disabled={!message.trim() || disabled}
-          className="send-button"
-        >
-          <span>Send</span>
-          <svg className="send-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-        </button>
       </form>
     </div>
   );

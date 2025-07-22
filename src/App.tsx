@@ -1,11 +1,11 @@
-import Header from './components/Header';
 import ChatInterface from './components/ChatInterface';
 
 function App() {
   return (
     <div className="app">
-      <Header />
-      <ChatInterface />
+      <div className="chat-card">
+        <ChatInterface />
+      </div>
     </div>
   );
 }
