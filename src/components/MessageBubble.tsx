@@ -7,7 +7,7 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
-  const { text, isBot, timestamp, isLoading } = message;
+  const { text, isBot, timestamp, isLoading, file } = message;
   
   return (
     <div className={`message-bubble ${isBot ? 'bot' : 'user'}`}>
@@ -15,9 +15,25 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         {isBot && (
           <div className="message-header">
             <div className="bot-avatar">
-              <span>AI</span>
+              <span>EW</span>
             </div>
-            <span className="bot-name">SA Fire AI</span>
+            <span className="bot-name">SA Fire Worker</span>
+          </div>
+        )}
+        
+        {file && !isBot && (
+          <div className="message-file">
+            <div className="file-attachment">
+              <span className="file-icon">📎</span>
+              <a 
+                href={file.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="file-link"
+              >
+                {file.fileName}
+              </a>
+            </div>
           </div>
         )}
         
