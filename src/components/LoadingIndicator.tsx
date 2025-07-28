@@ -8,7 +8,7 @@ const LoadingIndicator: React.FC = () => {
         <div className="loading-dot"></div>
         <div className="loading-dot"></div>
       </div>
-      <span className="loading-text">AI is thinking...</span>
+      <span className="loading-text">Worker is thinking...</span>
     </div>
   );
 };

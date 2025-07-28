@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ExecutionStartResponse, ExecutionStatusResponse } from '../types/api';
+import type { ExecutionStartResponse, ExecutionStatusResponse, FileData } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_TOKEN = import.meta.env.VITE_API_TOKEN;
@@ -14,11 +14,17 @@ const apiClient = axios.create({
   },
 });
 
-export const startExecution = async (userPrompt: string): Promise<ExecutionStartResponse> => {
+export const startExecution = async (userPrompt: string, file?: FileData): Promise<ExecutionStartResponse> => {
+  const inputs: { userPrompt: string; file?: FileData } = {
+    userPrompt,
+  };
+
+  if (file) {
+    inputs.file = file;
+  }
+
   const response = await apiClient.post(`/${ACCOUNT_ID}/agent/${AGENT_ID}/execute`, {
-    inputs: {
-      userPrompt,
-    },
+    inputs,
   });
   return response.data;
 };

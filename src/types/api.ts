@@ -1,3 +1,8 @@
+export interface FileData {
+  url: string;
+  fileName: string;
+}
+
 export interface ExecutionStartResponse {
   status: string;
   executionId: string;
@@ -24,4 +29,5 @@ export interface Message {
   isBot: boolean;
   timestamp: Date;
   isLoading?: boolean;
+  file?: FileData;
 }

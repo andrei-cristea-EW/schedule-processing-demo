@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { Message } from '../types/api';
+import type { Message, FileData } from '../types/api';
 import { startExecution, pollExecutionStatus } from '../services/api';
 import MessageBubble from './MessageBubble';
 import MessageInput from './MessageInput';
+import type { FileUploadResult } from '../services/fileUpload';
 
 const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,13 +18,14 @@ const ChatInterface: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const addMessage = (text: string, isBot: boolean, isLoading = false): Message => {
+  const addMessage = (text: string, isBot: boolean, isLoading = false, file?: FileData): Message => {
     const message: Message = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       text,
       isBot,
       timestamp: new Date(),
       isLoading,
+      file,
     };
     setMessages(prev => [...prev, message]);
     return message;
@@ -37,15 +39,20 @@ const ChatInterface: React.FC = () => {
     );
   };
 
-  const handleSendMessage = async (userMessage: string) => {
+  const handleSendMessage = async (userMessage: string, uploadedFile?: FileUploadResult) => {
     if (isLoading) return;
 
-    addMessage(userMessage, false);
+    const fileData: FileData | undefined = uploadedFile ? {
+      url: uploadedFile.url,
+      fileName: uploadedFile.fileName
+    } : undefined;
+
+    addMessage(userMessage, false, false, fileData);
     const botMessage = addMessage('', true, true);
     setIsLoading(true);
 
     try {
-      const executionResponse = await startExecution(userMessage);
+      const executionResponse = await startExecution(userMessage, fileData);
       
       const aiResponse = await pollExecutionStatus(
         executionResponse.executionId,
@@ -77,8 +84,8 @@ const ChatInterface: React.FC = () => {
             <span>SF</span>
           </div>
           <div>
-            <h1 className="header-title">SA Fire Protection AI</h1>
-            <p className="header-subtitle">Powered by EverWorker Agents</p>
+            <h1 className="header-title">SA Fire Protection Worker</h1>
+            <p className="header-subtitle">Powered by EverWorker</p>
           </div>
         </div>
       </div>
@@ -90,7 +97,7 @@ const ChatInterface: React.FC = () => {
                 <span>SF</span>
               </div>
               <h3 className="welcome-title">
-                Welcome to SA Fire Protection AI
+                Welcome to the SA Fire Protection Worker
               </h3>
               <p className="welcome-description">
                 Your intelligent EverWorker Agent is ready to assist with fire protection products, monitors, and systems.
