@@ -13,7 +13,7 @@ export default function ValidationResults({ results }: ValidationResultsProps) {
       <div className="results-header">
         <h3>Validation Results</h3>
         <a
-          href="https://thewaltdisneycompany.sharepoint.com/:x:/s/DSS-BusinessIntelligence-Planning/EZrE_6FGQchAqj1r_wqNxJYBrKl1-7D5f7FhHHBJUvsjSg?e=gDMKgA"
+          href="https://integrailcorp-my.sharepoint.com/:x:/g/personal/alexandru_cocinda_everworker_ai/EWJim_Oh_LNMqsPkEcZN9ZIBOuhozsEcLM8IDwurQQ66jA?e=waHOmE"
           target="_blank"
           rel="noopener noreferrer"
           className="sharepoint-button"
