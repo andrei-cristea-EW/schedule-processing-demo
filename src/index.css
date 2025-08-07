@@ -62,19 +62,6 @@ body {
   position: relative;
 }
 
-.everworker-logo {
-  position: absolute;
-  top: 2.3rem;
-  right: 2.3rem;
-  z-index: 10;
-}
-
-.everworker-logo img {
-  height: 24px;
-  width: auto;
-  opacity: 1;
-  transition: opacity 0.2s ease;
-}
 
 /* Header */
 .header {

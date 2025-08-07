@@ -5,7 +5,7 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="header-logo">
-          <img src="/favicon-96x96.png" alt="Schedule Processing" className="favicon-logo" />
+          <img src={`${import.meta.env.BASE_URL}favicon-96x96.png`} alt="Schedule Processing" className="favicon-logo" />
         </div>
         <div>
           <h1 className="header-title">
