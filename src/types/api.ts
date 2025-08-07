@@ -1,6 +1,28 @@
-export interface FileData {
-  url: string;
-  fileName: string;
+export interface ScheduleInputs {
+  msToken?: string;
+  userId: string;
+  inputFolder: string;
+  outputFile: string;
+}
+
+export interface ValidationWarning {
+  row: number;
+  field: string;
+  index: number;
+  message: string;
+  severity: "warning" | "error";
+}
+
+export interface ValidationSummary {
+  totalRows: number;
+  warningsCount: number;
+  errorsCount: number;
+}
+
+export interface ValidationResults {
+  warnings: ValidationWarning[];
+  validationSummary: ValidationSummary;
+  summary: string;
 }
 
 export interface ExecutionStartResponse {
@@ -14,20 +36,15 @@ export interface ExecutionStatusResponse {
     _id: string;
     status: 'queued' | 'running' | 'finished' | 'failed';
     outputs?: {
-      aianswer?: string;
+      warnings?: {
+        warnings: ValidationWarning[];
+        validationSummary: ValidationSummary;
+      };
+      summary?: string;
     };
     updatedAt: string;
     queuedAt: string;
     startedAt?: string;
     finishedAt?: string;
   };
-}
-
-export interface Message {
-  id: string;
-  text: string;
-  isBot: boolean;
-  timestamp: Date;
-  isLoading?: boolean;
-  file?: FileData;
 }

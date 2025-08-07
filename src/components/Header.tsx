@@ -5,13 +5,13 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="header-logo">
-          <span>SF</span>
+          <img src="/favicon-96x96.png" alt="Schedule Processing" className="favicon-logo" />
         </div>
         <div>
           <h1 className="header-title">
-            SA Fire Protection
+            Schedule Processing Demo
           </h1>
-          <p className="header-subtitle">AI Demo Worker</p>
+          <p className="header-subtitle">TV Schedule Validation & Analysis</p>
         </div>
       </div>
     </header>

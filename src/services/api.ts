@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ExecutionStartResponse, ExecutionStatusResponse, FileData } from '../types/api';
+import type { ExecutionStartResponse, ExecutionStatusResponse, ScheduleInputs, ValidationResults } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_TOKEN = import.meta.env.VITE_API_TOKEN;
@@ -14,17 +14,15 @@ const apiClient = axios.create({
   },
 });
 
-export const startExecution = async (userPrompt: string, file?: FileData): Promise<ExecutionStartResponse> => {
-  const inputs: { userPrompt: string; file?: FileData } = {
-    userPrompt,
-  };
-
-  if (file) {
-    inputs.file = file;
+export const startExecution = async (inputs: ScheduleInputs): Promise<ExecutionStartResponse> => {
+  // Filter out empty msToken if not provided
+  const cleanInputs = { ...inputs };
+  if (!cleanInputs.msToken || cleanInputs.msToken.trim() === '') {
+    delete cleanInputs.msToken;
   }
-
+  
   const response = await apiClient.post(`/${ACCOUNT_ID}/agent/${AGENT_ID}/execute`, {
-    inputs,
+    inputs: cleanInputs,
   });
   return response.data;
 };
@@ -36,20 +34,28 @@ export const getExecutionStatus = async (executionId: string): Promise<Execution
 
 export const pollExecutionStatus = async (
   executionId: string,
-  onUpdate?: (status: string) => void
-): Promise<string> => {
-  const maxAttempts = 60; // 5 minutes max
-  let attempts = 0;
-  
-  while (attempts < maxAttempts) {
+  onUpdate?: (status: string, data?: ValidationResults) => void
+): Promise<ValidationResults | null> => {
+  // Poll indefinitely until finished or failed - no timeout
+  while (true) {
     try {
       const statusResponse = await getExecutionStatus(executionId);
       const { execution } = statusResponse;
       
-      onUpdate?.(execution.status);
+      // Only extract results when finished
+      let validationResults: ValidationResults | null = null;
+      if (execution.status === 'finished' && execution.outputs?.warnings && execution.outputs?.summary) {
+        validationResults = {
+          warnings: execution.outputs.warnings.warnings,
+          validationSummary: execution.outputs.warnings.validationSummary,
+          summary: execution.outputs.summary,
+        };
+      }
+      
+      onUpdate?.(execution.status, validationResults);
       
       if (execution.status === 'finished') {
-        return execution.outputs?.aianswer || 'No response received';
+        return validationResults;
       }
       
       if (execution.status === 'failed') {
@@ -58,12 +64,9 @@ export const pollExecutionStatus = async (
       
       // Wait 5 seconds before next poll
       await new Promise(resolve => setTimeout(resolve, 5000));
-      attempts++;
     } catch (error) {
       console.error('Error polling execution status:', error);
       throw error;
     }
   }
-  
-  throw new Error('Execution timeout');
 };
