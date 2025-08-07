@@ -23,7 +23,7 @@ npm run preview
 
 ## Project Architecture
 
-This is a **React 19 + TypeScript + Vite** chat interface application for SA Fire Protection's AI customer support system.
+This is a **React 19 + TypeScript + Vite** validation interface application for schedule processing using AI validation services.
 
 ### Key Architecture Patterns
 
@@ -86,7 +86,7 @@ The application supports optional file attachments with messages:
 
 ### Deployment Configuration
 
-- Configured for GitHub Pages deployment with base path `/sa-fire-demo/`
+- Configured for GitHub Pages deployment with base path `/schedule-processing-demo/`
 - Production builds use Vite's static asset optimization
 - Build output goes to `dist/` directory
 - Base path is conditionally set based on NODE_ENV
