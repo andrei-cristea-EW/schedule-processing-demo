@@ -52,7 +52,7 @@ export const pollExecutionStatus = async (
         };
       }
       
-      onUpdate?.(execution.status, validationResults);
+      onUpdate?.(execution.status, validationResults || undefined);
       
       if (execution.status === 'finished') {
         return validationResults;
