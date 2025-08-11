@@ -8,7 +8,6 @@ import type { ScheduleInputs, ValidationResults as ValidationResultsType } from 
 export default function ScheduleInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<string>('idle');
-  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'retrying' | 'failed'>('connected');
   const [validationResults, setValidationResults] = useState<ValidationResultsType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +16,6 @@ export default function ScheduleInterface() {
     setError(null);
     setValidationResults(null);
     setStatus('starting');
-    setConnectionStatus('connected');
 
     try {
       const startResponse = await startExecution(inputs);
@@ -27,11 +25,8 @@ export default function ScheduleInterface() {
         
         const finalResults = await pollExecutionStatus(
           startResponse.executionId,
-          (newStatus, results, connStatus) => {
+          (newStatus, results) => {
             setStatus(newStatus);
-            if (connStatus) {
-              setConnectionStatus(connStatus);
-            }
             if (results) {
               setValidationResults(results);
             }
@@ -42,7 +37,6 @@ export default function ScheduleInterface() {
           setValidationResults(finalResults);
         }
         setStatus('finished');
-        setConnectionStatus('connected');
       } else {
         throw new Error('Failed to start execution');
       }
@@ -50,7 +44,6 @@ export default function ScheduleInterface() {
       console.error('Error processing validation:', err);
       setError(err instanceof Error ? err.message : 'An error occurred during validation');
       setStatus('failed');
-      setConnectionStatus('failed');
     } finally {
       setIsLoading(false);
     }

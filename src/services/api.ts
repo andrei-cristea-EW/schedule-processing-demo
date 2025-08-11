@@ -52,7 +52,7 @@ const getRetryDelay = (attempt: number): number => {
 
 export const pollExecutionStatus = async (
   executionId: string,
-  onUpdate?: (status: string, data?: ValidationResults, connectionStatus?: 'connected' | 'retrying' | 'failed') => void
+  onUpdate?: (status: string, data?: ValidationResults) => void
 ): Promise<ValidationResults | null> => {
   const maxTotalTime = 10 * 60 * 1000; // 10 minutes total
   const maxRetryAttempts = 5;
@@ -78,7 +78,7 @@ export const pollExecutionStatus = async (
         };
       }
       
-      onUpdate?.(execution.status, validationResults || undefined, 'connected');
+      onUpdate?.(execution.status, validationResults || undefined);
       
       if (execution.status === 'finished') {
         return validationResults;
@@ -107,12 +107,10 @@ export const pollExecutionStatus = async (
       
       // If too many consecutive errors or non-network error, fail
       if (consecutiveErrors > maxRetryAttempts) {
-        onUpdate?.('failed', undefined, 'failed');
         throw new Error('Connection lost. Please check your internet connection and try again.');
       }
       
       // For non-network errors, throw immediately
-      onUpdate?.('failed', undefined, 'failed');
       throw new Error(error.response?.data?.message || error.message || 'An unexpected error occurred.');
     }
   }
