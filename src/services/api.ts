@@ -54,7 +54,7 @@ export const pollExecutionStatus = async (
   executionId: string,
   onUpdate?: (status: string, data?: ValidationResults) => void
 ): Promise<ValidationResults | null> => {
-  const maxTotalTime = 10 * 60 * 1000; // 10 minutes total
+  const maxTotalTime = 60 * 60 * 1000; // 1 hour total
   const maxRetryAttempts = 5;
   const startTime = Date.now();
   
@@ -116,5 +116,5 @@ export const pollExecutionStatus = async (
   }
   
   // Timeout reached
-  throw new Error('Processing timeout reached (10 minutes). The validation may still be running. Please try checking again later.');
+  throw new Error('Processing timeout reached (1 hour). The validation may still be running. Please try checking again later.');
 };
