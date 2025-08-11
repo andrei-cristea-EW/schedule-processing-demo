@@ -212,6 +212,42 @@ body {
 .status-finished { color: var(--success-color); }
 .status-failed { color: var(--error-color); }
 
+.connection-status {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.connection-status.retrying {
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px solid var(--warning-color);
+  color: var(--warning-color);
+}
+
+.connection-status.failed {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+}
+
+.connection-icon {
+  font-size: 1rem;
+  animation: none;
+}
+
+.connection-status.retrying .connection-icon {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .error-message {
   margin-bottom: 1.5rem;
   padding: 0.75rem 1rem;
@@ -219,6 +255,15 @@ body {
   border: 1px solid var(--error-color);
   border-radius: 6px;
   color: var(--error-color);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.error-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 /* Validation Results */

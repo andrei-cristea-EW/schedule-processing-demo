@@ -12,6 +12,7 @@ const apiClient = axios.create({
     'Authorization': `Bearer ${API_TOKEN}`,
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 second timeout per request
 });
 
 export const startExecution = async (inputs: ScheduleInputs): Promise<ExecutionStartResponse> => {
@@ -32,15 +33,40 @@ export const getExecutionStatus = async (executionId: string): Promise<Execution
   return response.data;
 };
 
+// Helper function to check if error is network-related
+const isNetworkError = (error: any): boolean => {
+  return (
+    error.code === 'ERR_NETWORK' ||
+    error.code === 'NETWORK_ERROR' ||
+    error.code === 'ERR_INTERNET_DISCONNECTED' ||
+    error.code === 'ERR_NETWORK_CHANGED' ||
+    error.message === 'Network Error' ||
+    (error.response && error.response.status >= 500)
+  );
+};
+
+// Helper function for exponential backoff delay
+const getRetryDelay = (attempt: number): number => {
+  return Math.min(1000 * Math.pow(2, attempt), 10000); // Max 10 seconds
+};
+
 export const pollExecutionStatus = async (
   executionId: string,
-  onUpdate?: (status: string, data?: ValidationResults) => void
+  onUpdate?: (status: string, data?: ValidationResults, connectionStatus?: 'connected' | 'retrying' | 'failed') => void
 ): Promise<ValidationResults | null> => {
-  // Poll indefinitely until finished or failed - no timeout
-  while (true) {
+  const maxTotalTime = 10 * 60 * 1000; // 10 minutes total
+  const maxRetryAttempts = 5;
+  const startTime = Date.now();
+  
+  let consecutiveErrors = 0;
+  
+  while (Date.now() - startTime < maxTotalTime) {
     try {
       const statusResponse = await getExecutionStatus(executionId);
       const { execution } = statusResponse;
+      
+      // Reset error counter on successful request
+      consecutiveErrors = 0;
       
       // Only extract results when finished
       let validationResults: ValidationResults | null = null;
@@ -52,21 +78,45 @@ export const pollExecutionStatus = async (
         };
       }
       
-      onUpdate?.(execution.status, validationResults || undefined);
+      onUpdate?.(execution.status, validationResults || undefined, 'connected');
       
       if (execution.status === 'finished') {
         return validationResults;
       }
       
       if (execution.status === 'failed') {
-        throw new Error('Execution failed');
+        throw new Error('AI processing failed. Please try again.');
       }
       
       // Wait 5 seconds before next poll
       await new Promise(resolve => setTimeout(resolve, 5000));
-    } catch (error) {
+      
+    } catch (error: any) {
       console.error('Error polling execution status:', error);
-      throw error;
+      consecutiveErrors++;
+      
+      // Handle network errors with retry logic (silent retries)
+      if (isNetworkError(error) && consecutiveErrors <= maxRetryAttempts) {
+        const retryDelay = getRetryDelay(consecutiveErrors - 1);
+        
+        // Keep status as 'running' - don't inform user about retries
+        console.log(`Network error, retrying in ${retryDelay}ms (attempt ${consecutiveErrors}/${maxRetryAttempts})`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      // If too many consecutive errors or non-network error, fail
+      if (consecutiveErrors > maxRetryAttempts) {
+        onUpdate?.('failed', undefined, 'failed');
+        throw new Error('Connection lost. Please check your internet connection and try again.');
+      }
+      
+      // For non-network errors, throw immediately
+      onUpdate?.('failed', undefined, 'failed');
+      throw new Error(error.response?.data?.message || error.message || 'An unexpected error occurred.');
     }
   }
+  
+  // Timeout reached
+  throw new Error('Processing timeout reached (10 minutes). The validation may still be running. Please try checking again later.');
 };
