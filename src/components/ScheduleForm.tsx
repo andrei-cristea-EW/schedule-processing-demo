@@ -9,9 +9,9 @@ interface ScheduleFormProps {
 export default function ScheduleForm({ onSubmit, disabled = false }: ScheduleFormProps) {
   const [formData, setFormData] = useState<ScheduleInputs>({
     msToken: '',
-    userId: '',
-    inputFolder: '',
-    outputFile: '',
+    userId: 'alexandru.cocinda@everworker.ai',
+    inputFolder: '/Demo/Schedules',
+    outputFile: '/Demo/Combined Schedules.xlsx',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
